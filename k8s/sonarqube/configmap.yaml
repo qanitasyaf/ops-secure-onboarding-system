@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sonarqube-config
+  namespace: sonarqube
+data:
+  sonar.properties: |
+    # Database Configuration
+    sonar.jdbc.url=jdbc:postgresql://postgresql:5432/sonarqube
+    sonar.jdbc.maxActive=60
+    sonar.jdbc.maxIdle=5
+    sonar.jdbc.minIdle=2
+    sonar.jdbc.maxWait=5000
+    
+    # Web Server Configuration
+    sonar.web.host=0.0.0.0
+    sonar.web.port=9000
+    sonar.web.context=/
+    
+    # Security Configuration
+    sonar.forceAuthentication=false
+    
+    # Elasticsearch Configuration
+    sonar.search.javaOpts=-Xmx2g -Xms2g -XX:MaxDirectMemorySize=2g
+    
+    # Logging Configuration
+    sonar.log.level=INFO
+    sonar.log.level.web=INFO
+    
+    # Performance Tuning
+    sonar.web.javaOpts=-Xmx2g -Xms2g -XX:+UseG1GC
+    sonar.ce.javaOpts=-Xmx2g -Xms2g -XX:+UseG1GC
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: sonarqube
+data:
+  postgresql.conf: |
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 50
+    shared_buffers = 128MB
+    effective_cache_size = 512MB
+    work_mem = 2MB
+    maintenance_work_mem = 32MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 8MB
+    random_page_cost = 1.1
+    effective_io_concurrency = 100
+    timezone = 'UTC'
+    default_text_search_config = 'pg_catalog.english'    
+    max_worker_processes = 4
+    max_parallel_workers_per_gather = 2
+    max_parallel_workers = 4

@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: sonarqube-managed-certificate
+  namespace: default
+spec:
+  domains:
+    - sonarqube.yourdomain.com # Ganti dengan domain Anda
