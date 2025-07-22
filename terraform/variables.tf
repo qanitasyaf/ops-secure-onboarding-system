@@ -110,6 +110,11 @@ variable "db_user" {
   default     = "sonarqube_user"
 }
 
+variable "app_image" {
+  description = "Full Docker image path for the application to be deployed to GKE"
+  type = string
+  
+}
 # variables.tf
 
 # ... (your other variable declarations like project_id, region, etc.) ...
@@ -126,7 +131,6 @@ variable "db_disk_size_gb" {
   type        = number
   default     = 20 
 }
-
 
 # db_password akan digenerate secara acak untuk keamanan
 # Pastikan Anda mengelola Secret ini di Kubernetes atau Secret Manager!
