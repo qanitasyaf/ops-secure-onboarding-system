@@ -17,4 +17,5 @@ terraform {
 provider "google" {
   project = var.project_id
   region  = var.region
+  credentials = file(var.gcp_sa_key_file_path)
 }
