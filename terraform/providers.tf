@@ -15,6 +15,6 @@ terraform {
 }
 
 provider "google" {
-  project = "model-parsec-465503-p3"
-  region  = "asia-southeast1"
+  project = var.project_id
+  region  = var.region
 }
