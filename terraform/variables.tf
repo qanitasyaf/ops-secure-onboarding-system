@@ -149,8 +149,3 @@ variable "cloudbuild_sa_id" {
   default     = "cloudbuild-sa"
 }
 
-variable "gcp_sa_key_file_path" {
-  description = "Path to the Google Cloud Service Account JSON key file for Terraform authentication."
-  type        = string
-  sensitive   = true // It's a secret, mark it sensitive!
-}
