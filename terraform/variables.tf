@@ -3,12 +3,13 @@
 variable "project_id" {
   description = "Google Cloud Project ID"
   type        = string
+  default     = "model-parsec-465503-p3" 
 }
 
 variable "region" {
   description = "Region to Deploy Google Kubernetes Engine"
   type        = string
-  default     = "asia-southeast2" 
+  default     = "asia-southeast1" 
 }
 
 # --- GKE Cluster Variables ---
