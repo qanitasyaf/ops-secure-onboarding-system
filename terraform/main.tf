@@ -289,13 +289,13 @@ resource "google_sql_database" "sonarqube_database" {
   collation = "en_US.UTF8"
 }
 
-# resource "google_sql_user" "sonarqube_db_user" {
-#  project  = var.project_id
-#  name     = var.db_user
-#  instance = google_sql_database_instance.sonarqube_db_instance.name
-#  host     = "%" # Izinkan koneksi dari mana saja dalam VPC Private
-#  password = random_password.db_password.result # Password digenerate otomatis
-# } 
+resource "google_sql_user" "sonarqube_db_user" {
+  project  = var.project_id
+  name     = var.db_user
+  instance = google_sql_database_instance.sonarqube_db_instance.name
+  host     = "%" # Izinkan koneksi dari mana saja dalam VPC Private
+  password = random_password.db_password.result # Password digenerate otomatis
+} 
 
 # --------------------------------------------------------------------------
 # 5. Cloud Storage Bucket (untuk Artifacts CI/CD)
