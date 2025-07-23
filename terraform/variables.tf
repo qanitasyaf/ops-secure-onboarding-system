@@ -53,13 +53,13 @@ variable "enable_workload_identity" {
 variable "vpc_network_name" {
   description = "The name of the custom VPC network."
   type        = string
-  default     = "cicd-vpc-network"
+  default     = "testing-vpc-network"
 }
 
 variable "subnet_name" {
   description = "The name of the custom subnet."
   type        = string
-  default     = "cicd-subnet"
+  default     = "testing-subnet"
 }
 
 variable "subnet_cidr" {
