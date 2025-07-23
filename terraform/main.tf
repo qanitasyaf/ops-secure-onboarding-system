@@ -120,6 +120,12 @@ resource "google_project_iam_member" "cloudbuild_sa_roles" {
   member = "serviceAccount:${google_service_account.cloudbuild_sa.email}"
 }
 
+resource "google_project_iam_member" "cloudbuild_sa_project_iam_admin" {
+  project = var.project_id
+  role    = "roles/resourcemanager.projectIamAdmin"
+  member  = "serviceAccount:${google_service_account.cloudbuild_sa.email}"
+}
+
 # --------------------------------------------------------------------------
 # 3. Cluster GKE
 # --------------------------------------------------------------------------

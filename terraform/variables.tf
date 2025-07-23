@@ -114,6 +114,7 @@ variable "db_user" {
 variable "app_image" {
   description = "Full Docker image path for the application to be deployed to GKE"
   type = string
+  default = "gcr.io/model-parsec-465503-p3/frontend:latest"
   
 }
 # variables.tf
