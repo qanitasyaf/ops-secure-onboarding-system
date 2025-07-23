@@ -263,7 +263,7 @@ resource "google_sql_database_instance" "sonarqube_db_instance" {
 # Alokasi IP range untuk Cloud SQL private service access
 resource "google_compute_global_address" "private_ip_alloc" {
   project       = var.project_id
-  name          = "google-managed-services-private-ip"
+  name          = "google-managed-services-private-ip-testing"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 20 # /20 cukup besar untuk private services
