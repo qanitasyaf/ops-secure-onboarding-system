@@ -42,12 +42,12 @@ resource "google_compute_subnetwork" "gke_subnet" {
   private_ip_google_access = true
 
   secondary_ip_range {
-    range_name    = var.pod_ip_range_name
+    range_name  = var.pod_ip_range_name
     ip_cidr_range = var.pod_ip_range_cidr
   }
 
   secondary_ip_range {
-    range_name    = var.services_ip_range_name
+    range_name  = var.services_ip_range_name
     ip_cidr_range = var.services_ip_range_cidr
   }
 }
@@ -220,6 +220,9 @@ resource "google_container_node_pool" "primary_node_pool" {
 # --------------------------------------------------------------------------
 # 4. Cloud SQL (PostgreSQL)
 # --------------------------------------------------------------------------
+# MENGHAPUS DEFINISI VPC DAN SUBNET DUPLIKAT DI SINI.
+# VPC dan Subnet GKE yang sudah ada akan digunakan untuk Cloud SQL.
+/*
 resource "google_compute_network" "vpc_network_name" {
   name                    = "gke-vpc"
   auto_create_subnetworks = false
@@ -232,6 +235,7 @@ resource "google_compute_subnetwork" "subnet_name" {
   ip_cidr_range            = "10.10.0.0/16"
   private_ip_google_access = true
 }
+*/
 
 # Alokasi IP range untuk Cloud SQL private service access
 resource "google_compute_global_address" "private_ip_alloc" {
@@ -239,14 +243,16 @@ resource "google_compute_global_address" "private_ip_alloc" {
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 20
-  network       = google_compute_network.vpc_network_name.id
+  # Menggunakan VPC yang sama dengan GKE
+  network       = google_compute_network.vpc_network.id
 }
 
 
 # Koneksi peering VPC untuk private service access (Cloud SQL)
 resource "google_service_networking_connection" "private_vpc_connection" {
-  network                 = google_compute_network.vpc_network.id
-  service                 = "servicenetworking.googleapis.com"
+  # Menggunakan VPC yang sama dengan GKE
+  network                   = google_compute_network.vpc_network.id
+  service                   = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
 }
 
@@ -256,14 +262,16 @@ resource "google_sql_database_instance" "postgres_instance" {
   region           = var.region
 
   settings {
-    tier      = var.db_tier
-    disk_size = var.db_disk_size_gb
-    disk_type = "PD_SSD"
+    tier        = var.db_tier
+    disk_size   = var.db_disk_size_gb
+    disk_type   = "PD_SSD"
+    # Pastikan ini sudah diatur ke false untuk memungkinkan penghapusan/modifikasi
     deletion_protection_enabled = false
 
     ip_configuration {
       ipv4_enabled    = false
-      private_network = google_compute_network.vpc_network_name.id
+      # Menggunakan VPC yang sama dengan GKE
+      private_network = google_compute_network.vpc_network.id
     }
 
     backup_configuration {
