@@ -46,8 +46,13 @@ resource "google_container_cluster" "primary" {
     location = var.region
     network  = google_compute_network.custom_network.id
     subnetwork = google_compute_subnetwork.custom_subnet.id
+
     deletion_protection = false
     remove_default_node_pool = true
+
+    lifecycle {
+        ignore_changes = [initial_node_count]
+    }
 }
 
 resource "google_container_node_pool" "primary_nodes" {
