@@ -125,13 +125,13 @@ variable "app_image" {
 variable "db_tier" {
   description = "The machine type (tier) for the Cloud SQL instance. Example: db-f1-micro, db-g1-small, db-standard-4."
   type        = string
-  default     = "db-g1-small" 
+  default     = "db-f1-micro" 
 }
 
 variable "db_disk_size_gb" {
   description = "The disk size in GB for the Cloud SQL instance."
   type        = number
-  default     = 20 
+  default     = 10
 }
 
 # db_password akan digenerate secara acak untuk keamanan

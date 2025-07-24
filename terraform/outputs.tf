@@ -15,25 +15,21 @@ output "kubeconfig_command" {
   value       = "gcloud container clusters get-credentials ${google_container_cluster.primary_gke.name} --region ${var.region} --project ${var.project_id}"
 }
 
-output "db_connection_name" {
-  description = "The connection name for the Cloud SQL instance (used by Cloud SQL Proxy or direct connection)."
-  value       = google_sql_database_instance.sonarqube_db_instance.connection_name
-}
-
 output "db_private_ip_address" {
-  description = "The private IP address of the Cloud SQL instance."
-  value       = google_sql_database_instance.sonarqube_db_instance.private_ip_address
+  value = google_sql_database_instance.postgres_instance.private_ip_address
 }
 
-output "db_username" {
-  description = "The username for the Cloud SQL database."
-  value       = google_sql_user.sonarqube_db_user.name
+output "db_connection_name" {
+  value = google_sql_database_instance.postgres_instance.connection_name
 }
 
 output "db_password" {
-  description = "The randomly generated password for the Cloud SQL database user."
-  value       = random_password.db_password.result
-  sensitive   = true # Tandai sebagai sensitif agar tidak ditampilkan di console secara default
+  value     = random_password.db_password.result
+  sensitive = true
+}
+
+output "vpc_network_name" {
+  value = google_compute_network.vpc_network.name
 }
 
 output "gcs_bucket_name" {

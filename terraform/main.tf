@@ -220,82 +220,70 @@ resource "google_container_node_pool" "primary_node_pool" {
 # --------------------------------------------------------------------------
 # 4. Cloud SQL (PostgreSQL)
 # --------------------------------------------------------------------------
-resource "google_sql_database_instance" "sonarqube_db_instance" {
-  # authorized_networks {
-  #   value = "0.0.0.0/0" # WARNING: Izinkan hanya IP yang relevan jika menggunakan IP Publik
-  # }
+resource "google_compute_network" "vpc_network_name" {
+  name                    = "gke-vpc"
+  auto_create_subnetworks = false
+}
 
-  name             = var.db_instance_name
-  database_version = "POSTGRES_15" # Specify the database version
-  region           = var.region
-
-  # --- START OF ADDED CODE FOR SETTINGS BLOCK ---
-  settings {
-    tier      = var.db_tier      # Machine type for the DB instance
-    disk_size = var.db_disk_size_gb # Disk size in GB
-    disk_type = "PD_SSD" # Recommended for performance
-
-    backup_configuration {
-      enabled            = true
-      start_time         = "03:00" # Example backup start time (UTC)
-    }
-
-    ip_configuration {
-      ipv4_enabled = false # Set to true if you want a public IP. Keep false for private access.
-      private_network = google_compute_network.vpc_network.id # Link to your existing VPC network
-    }
-
-    database_flags {
-      name  = "cloudsql.logical_decoding"
-      value = "on"
-    }
-
-    # Anda bisa menambahkan lebih banyak konfigurasi di sini sesuai kebutuhan:
-    # availability_type = "REGIONAL" # Untuk HA, diperlukan minimal 2 zona
-    # pricing_plan      = "PER_USE"
-  }
-  # --- END OF ADDED CODE FOR SETTINGS BLOCK ---
-
-  # Add any necessary configuration here (beyond the settings block)
+resource "google_compute_subnetwork" "subnet_name" {
+  name                     = "gke-subnet"
+  region                   = var.region
+  network                  = google_compute_network.vpc_network_name.id
+  ip_cidr_range            = "10.10.0.0/16"
+  private_ip_google_access = true
 }
 
 # Alokasi IP range untuk Cloud SQL private service access
 resource "google_compute_global_address" "private_ip_alloc" {
-  project       = var.project_id
-  name          = "google-managed-services-private-ip-testing"
+  name          = "sql-private-ip-range"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
-  prefix_length = 20 # /20 cukup besar untuk private services
-  network       = google_compute_network.vpc_network.id
+  prefix_length = 20
+  network       = google_compute_network.vpc_network_name.id
 }
+
 
 # Koneksi peering VPC untuk private service access (Cloud SQL)
 resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.vpc_network.id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
-  depends_on = [
-    google_compute_network.vpc_network,
-    google_compute_global_address.private_ip_alloc
-  ]
 }
 
-resource "google_sql_database" "sonarqube_database" {
-  project  = var.project_id
+resource "google_sql_database_instance" "postgres_instance" {
+  name             = var.db_instance_name
+  database_version = "POSTGRES_15"
+  region           = var.region
+
+  settings {
+    tier      = var.db_tier
+    disk_size = var.db_disk_size_gb
+    disk_type = "PD_SSD"
+
+    ip_configuration {
+      ipv4_enabled    = false
+      private_network = google_compute_network.vpc_network.id
+    }
+
+    backup_configuration {
+      enabled    = true
+      start_time = "03:00"
+    }
+  }
+
+  depends_on = [google_service_networking_connection.private_vpc_connection]
+}
+
+resource "google_sql_database" "mydb" {
   name     = var.db_name
-  instance = google_sql_database_instance.sonarqube_db_instance.name
-  charset  = "UTF8"
-  collation = "en_US.UTF8"
+  instance = google_sql_database_instance.postgres_instance.name
 }
 
-resource "google_sql_user" "sonarqube_db_user" {
-  project  = var.project_id
+resource "google_sql_user" "db_user" {
   name     = var.db_user
-  instance = google_sql_database_instance.sonarqube_db_instance.name
-  host     = "%" # Izinkan koneksi dari mana saja dalam VPC Private
-  password = random_password.db_password.result # Password digenerate otomatis
-} 
-
+  instance = google_sql_database_instance.postgres_instance.name
+  password = random_password.db_password.result
+}
 # --------------------------------------------------------------------------
 # 5. Cloud Storage Bucket (untuk Artifacts CI/CD)
 # --------------------------------------------------------------------------
