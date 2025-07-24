@@ -48,7 +48,6 @@ resource "google_container_cluster" "primary" {
     subnetwork = google_compute_subnetwork.custom_subnet.id
     deletion_protection = false
     remove_default_node_pool = true
-    initial_node_count = 1
 }
 
 resource "google_container_node_pool" "primary_nodes" {
