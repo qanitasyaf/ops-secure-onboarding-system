@@ -21,3 +21,9 @@ variable "k8s_version" {
     type        = string
     default     = "1.31.6-gke.1000"
 }
+
+variable "subnet_cidr" {
+  description = "The IP CIDR range for the main subnet."
+  type        = string
+  default     = "10.0.0.0/19"
+}
