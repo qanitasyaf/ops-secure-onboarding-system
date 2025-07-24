@@ -19,7 +19,7 @@ resource "google_compute_firewall" "allow-internal" {
         protocol = "all"
     }
 
-    source_ranges = ["10.10.0.0/16"]
+    source_ranges = [google_compute_subnetwork.custom_subnet.ip_cidr_range]
 }
 
 #Firewall for External Communication
