@@ -58,8 +58,8 @@ resource "google_container_node_pool" "primary_nodes" {
     node_count = 1
 
     node_config {
-        machine_type = "e2-medium"
-        disk_size_gb = 15
+        machine_type = "e2-small"
+        disk_size_gb = 30
         disk_type = "pd-standard"
         image_type = "UBUNTU_CONTAINERD"
     }
