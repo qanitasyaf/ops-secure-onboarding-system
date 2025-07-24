@@ -43,7 +43,7 @@ resource "google_compute_firewall" "allow-external" {
 resource "google_container_cluster" "primary" {
     project = var.project
     name     = "terraform-gke-cluster"
-    location = var.region
+    location = "${var.region}-a"
     network  = google_compute_network.custom_network.id
     subnetwork = google_compute_subnetwork.custom_subnet.id
     initial_node_count = 1
