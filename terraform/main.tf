@@ -259,10 +259,11 @@ resource "google_sql_database_instance" "postgres_instance" {
     tier      = var.db_tier
     disk_size = var.db_disk_size_gb
     disk_type = "PD_SSD"
+    deletion_protection_enabled = false
 
     ip_configuration {
       ipv4_enabled    = false
-      private_network = google_compute_network.vpc_network.id
+      private_network = google_compute_network.vpc_network_name.id
     }
 
     backup_configuration {
