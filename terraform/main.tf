@@ -237,7 +237,6 @@ resource "google_sql_database_instance" "sonarqube_db_instance" {
 
     backup_configuration {
       enabled            = true
-      binary_log_enabled = true # Required for read replicas
       start_time         = "03:00" # Example backup start time (UTC)
     }
 
