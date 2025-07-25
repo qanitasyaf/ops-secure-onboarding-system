@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sonarqube
 spec:
-  serviceName: sonarqube
+  serviceName: sonarqube 
   replicas: 1
   selector:
     matchLabels:
@@ -16,6 +16,8 @@ spec:
       labels:
         app: sonarqube
     spec:
+      securityContext:
+        fsGroup: 1000 
       containers:
         - name: sonarqube
           image: sonarqube:community
@@ -23,19 +25,25 @@ spec:
           ports:
             - containerPort: 9000
               name: http
+          resources:
+            requests:
+              memory: "2Gi"   
+            limits:
+              memory: "3Gi"  
+              cpu: 3
           env:
             - name: SONAR_JDBC_URL
               value: "jdbc:postgresql://postgresql:5432/sonarqube"
             - name: SONAR_JDBC_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: sonarqube-db-secret
-                  key: username
+                  name: sonarqube-db-secret 
+                  key: username 
             - name: SONAR_JDBC_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: sonarqube-db-secret
-                  key: password
+                  key: password 
           volumeMounts:
             - name: sonarqube-data
               mountPath: /opt/sonarqube/data
@@ -48,6 +56,11 @@ spec:
             - name: sonarqube-config
               mountPath: /opt/sonarqube/conf/sonar.properties
               subPath: sonar.properties
+          securityContext:
+            runAsUser: 1000 
+            runAsGroup: 1000 
+            allowPrivilegeEscalation: false 
+            readOnlyRootFilesystem: false 
           livenessProbe:
             httpGet:
               path: /api/system/status
@@ -75,9 +88,9 @@ spec:
       volumes:
         - name: sonarqube-config
           configMap:
-            name: sonarqube-config
+            name: sonarqube-config 
         - name: sonarqube-temp
-          emptyDir: {}
+          emptyDir: {} 
   volumeClaimTemplates:
     - metadata:
         name: sonarqube-data
@@ -104,15 +117,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarqube
+  name: sonarqube 
   namespace: sonarqube
   labels:
     app: sonarqube
 spec:
-  type: ClusterIP
+  type: ClusterIP 
   ports:
     - port: 9000
       targetPort: 9000
       name: http
   selector:
-    app: sonarqube
+    app: sonarqube 
