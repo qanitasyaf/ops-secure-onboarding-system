@@ -2,23 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
-  labels:
-    app: backend-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: backend-app
+      app: backend
   template:
     metadata:
       labels:
-        app: backend-app
+        app: backend
     spec:
       containers:
       - name: backend-container
         image: gcr.io/model-parsec-465503-p3/backend-secure-onboarding-system:latest
         ports:
-          - containerPort: 8080
+        - containerPort: 8080
         resources:
           requests:
             memory: "512Mi"
@@ -26,6 +24,19 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "1"
+        env: 
+        - name: DB_HOST
+          value: postgresql-service.backend
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: password
 ---
 apiVersion: v1
 kind: Service

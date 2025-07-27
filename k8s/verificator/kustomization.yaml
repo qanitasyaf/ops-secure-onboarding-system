@@ -1,0 +1,4 @@
+resources:
+  - postgresql-deployment.yaml
+  - postgresql-secret.yaml
+  - networkpolicy.yaml

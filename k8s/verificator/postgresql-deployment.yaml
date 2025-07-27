@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: StatefulSet 
+metadata:
+  name: postgresql
+  namespace: verificator
+  labels:
+    app: postgresql
+spec:
+  serviceName: "postgresql-service" 
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:15-alpine 
+          imagePullPolicy: IfNotPresent 
+          ports:
+            - containerPort: 5432
+              name: postgresql
+              protocol: TCP 
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials 
+                  key: database 
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
+            - name: PGDATA 
+              value: /var/lib/postgresql/data/pgdata 
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data 
+          resources:
+            requests:
+              cpu: "250m" 
+              memory: "512Mi" 
+            limits:
+              cpu: "1" 
+              memory: "1Gi"
+          livenessProbe: 
+            exec:
+              command: ["pg_isready", "-U", "$(POSTGRES_USER)", "-d", "$(POSTGRES_DB)", "-h", "localhost"]
+            initialDelaySeconds: 30 
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe: 
+            exec:
+              command: ["pg_isready", "-U", "$(POSTGRES_USER)", "-d", "$(POSTGRES_DB)", "-h", "localhost"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data 
+      spec:
+        accessModes:
+          - ReadWriteOnce 
+        resources:
+          requests:
+            storage: 5Gi 

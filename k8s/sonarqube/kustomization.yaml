@@ -1,0 +1,7 @@
+resources:
+  - configmap.yaml
+  - managed-certificate.yaml
+  - network-policies.yaml
+  - postgres-statefulset.yaml
+  - secrets.yaml
+  - sonarqube-statefulset.yaml

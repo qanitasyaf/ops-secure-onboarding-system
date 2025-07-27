@@ -16,7 +16,6 @@ spec:
       labels:
         app: postgresql
     spec:
-      # --- START: SECURITY CONTEXT DI LEVEL POD (untuk kepemilikan volume) ---
       securityContext:
         fsGroup: 999 # UID dari user 'postgres' di image PostgreSQL
       # --- END: SECURITY CONTEXT DI LEVEL POD ---
