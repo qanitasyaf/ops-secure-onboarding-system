@@ -4,4 +4,5 @@ resources:
   - network-policies.yaml
   - postgres-statefulset.yaml
   - secrets.yaml
+  - set-vm.yaml
   - sonarqube-statefulset.yaml

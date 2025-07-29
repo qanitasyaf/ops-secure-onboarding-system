@@ -1,0 +1,30 @@
+postgresql:
+  enabled: false
+
+jdbc:
+  url: jdbc:postgresql://postgresql:5432/sonarqube
+  existingSecret: sonarqube-db-secret
+  usernameSecretKey: username
+  passwordSecretKey: password
+
+monitoring:
+  monitoringPasscodeSecretName: sonarqube-monitoring-passcode
+  monitoringPasscodeSecretKey: passcode
+
+elasticsearch:
+  bootstrapChecks: false
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "2Gi"
+  limits:
+    cpu: "1"
+    memory: "3Gi"
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+service:
+  type: ClusterIP

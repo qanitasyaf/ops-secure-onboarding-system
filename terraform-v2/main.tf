@@ -1,10 +1,10 @@
-resource "google_compute_network" "custom_network" {
+resource "google_compute_network" "xmen_network" {
     name = "custom-vpc"
     auto_create_subnetworks = false
 }
 
-resource "google_compute_subnetwork" "custom_subnet" {
-    name          = "custom-subnetwork"
+resource "google_compute_subnetwork" "xmen_subnet" {
+    name          = "xmen-subnetwork"
     ip_cidr_range = var.subnet_cidr
     region        = var.region
     network       = google_compute_network.custom_network.id
@@ -42,7 +42,7 @@ resource "google_compute_firewall" "allow-external" {
 #GKE Cluster
 resource "google_container_cluster" "primary" {
     project = var.project
-    name     = "terraform-gke-cluster"
+    name     = "gke-secure-onboarding-system"
     location = "${var.region}-a"
     network  = google_compute_network.custom_network.id
     subnetwork = google_compute_subnetwork.custom_subnet.id
@@ -58,7 +58,7 @@ resource "google_container_node_pool" "primary_nodes" {
     name = "primary-node-pool"
     cluster = google_container_cluster.primary.name
     location = google_container_cluster.primary.location
-    node_count = 3
+    node_count = 6
 
     node_config {
         machine_type = "e2-standard-2"

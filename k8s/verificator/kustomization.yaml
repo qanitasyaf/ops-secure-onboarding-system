@@ -1,4 +1,6 @@
 resources:
+  - verificator-deployment.yaml
   - postgresql-deployment.yaml
   - postgresql-secret.yaml
+  - postgresql-service.yaml
   - networkpolicy.yaml

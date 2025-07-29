@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
+  namespace: backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -20,7 +21,7 @@ spec:
         resources:
           requests:
             memory: "512Mi"
-            cpu: "500m"
+            cpu: "250m"
           limits:
             memory: "1Gi"
             cpu: "1"
@@ -42,10 +43,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
+  namespace: backend
 spec:
   type: LoadBalancer
   selector:
-    app: backend-app
+    app: backend
   ports:
     - protocol: TCP
       port: 8080

@@ -27,11 +27,13 @@ spec:
               name: http
           resources:
             requests:
-              memory: "2Gi"   
+              memory: "2Gi"
             limits:
               memory: "3Gi"  
-              cpu: 3
+              cpu: "1"
           env:
+            - name: SONARQUBE_WEB_JAVAOPTS
+              value: "-Xmx2g -Xms2g" 
             - name: SONAR_JDBC_URL
               value: "jdbc:postgresql://postgresql:5432/sonarqube"
             - name: SONAR_JDBC_USERNAME
@@ -56,6 +58,7 @@ spec:
             - name: sonarqube-config
               mountPath: /opt/sonarqube/conf/sonar.properties
               subPath: sonar.properties
+              readOnly: true
           securityContext:
             runAsUser: 1000 
             runAsGroup: 1000 
@@ -63,15 +66,15 @@ spec:
             readOnlyRootFilesystem: false 
           livenessProbe:
             httpGet:
-              path: /api/system/status
+              path: /
               port: 9000
-            initialDelaySeconds: 180
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 3
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 5
           readinessProbe:
             httpGet:
-              path: /api/system/status
+              path: /
               port: 9000
             initialDelaySeconds: 60
             periodSeconds: 10
@@ -79,18 +82,16 @@ spec:
             failureThreshold: 3
           startupProbe:
             httpGet:
-              path: /api/system/status
+              path: /
               port: 9000
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            initialDelaySeconds: 180
+            periodSeconds: 15
             timeoutSeconds: 5
-            failureThreshold: 24
+            failureThreshold: 40
       volumes:
         - name: sonarqube-config
           configMap:
-            name: sonarqube-config 
-        - name: sonarqube-temp
-          emptyDir: {} 
+            name: sonarqube-config
   volumeClaimTemplates:
     - metadata:
         name: sonarqube-data
@@ -128,4 +129,4 @@ spec:
       targetPort: 9000
       name: http
   selector:
-    app: sonarqube 
+    app: sonarqube

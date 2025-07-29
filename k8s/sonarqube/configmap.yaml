@@ -21,7 +21,10 @@ data:
     sonar.forceAuthentication=false
     
     # Elasticsearch Configuration
-    sonar.search.javaOpts=-Xmx2g -Xms2g -XX:MaxDirectMemorySize=2g
+    sonar.search.javaOpts=-Xmx2g -Xms2g -XX:MaxDirectMemorySize=1g
+    
+    # Web Server Configuration
+    sonar.web.javaOpts=-Xmx2g -Xms2g -XX:+UseG1GC
     
     # Logging Configuration
     sonar.log.level=INFO

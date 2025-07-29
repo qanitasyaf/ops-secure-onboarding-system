@@ -41,9 +41,16 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: sonarqube-db-secret
-                  key: password # Kunci di dalam Secret yang menyimpan password
-            - name: PGDATA # Penting untuk PostgreSQL, menunjuk ke mount path volume
+                  key: password 
+            - name: PGDATA 
               value: /var/lib/postgresql/data/pgdata
+          resources:
+            requests:
+              cpu: "250m" 
+              memory: "1Gi" 
+            limits:
+              cpu: "750m" 
+              memory: "2Gi" 
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data # Lokasi data PostgreSQL di dalam container
