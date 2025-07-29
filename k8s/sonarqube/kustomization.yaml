@@ -6,6 +6,3 @@ resources:
   - secrets.yaml              # Secret DB Sonarqube
   - postgres-statefulset.yaml # DB untuk Sonarqube
   - sonarqube-statefulset.yaml
-  - network-policies.yaml
-  - managed-certificate.yaml
-  - set-vm.yaml     

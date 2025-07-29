@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgresql # Pastikan ini adalah nama StatefulSet PostgreSQL Anda
+  name: postgresql
   namespace: sonarqube
   labels:
-    app: postgresql # Label yang akan digunakan oleh selector dan service
+    app: postgresql
 spec:
-  serviceName: "postgresql" # Nama Service headless untuk StatefulSet ini
+  serviceName: postgresql
   replicas: 1
   selector:
     matchLabels:
@@ -16,95 +16,89 @@ spec:
       labels:
         app: postgresql
     spec:
-      securityContext:
-        fsGroup: 999 # UID dari user 'postgres' di image PostgreSQL
-      # --- END: SECURITY CONTEXT DI LEVEL POD ---
       containers:
-        - name: postgresql # Nama container PostgreSQL
-          image: postgres:15-alpine # Menggunakan image PostgreSQL 15 Alpine
+        - name: postgresql
+          image: postgres:17-alpine
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
-              name: pg-port
+              name: postgresql
           env:
-            # Mengambil kredensial dari Secret
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: sonarqube-db-secret # Nama Secret Anda
-                  key: database # Kunci di dalam Secret yang menyimpan nama database
+                  name: sonarqube-db-secret
+                  key: database
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: sonarqube-db-secret
-                  key: username # Kunci di dalam Secret yang menyimpan username
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: sonarqube-db-secret
-                  key: password 
-            - name: PGDATA 
+                  key: password
+            - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           resources:
             requests:
-              cpu: "250m" 
-              memory: "1Gi" 
+              memory: "256Mi"
+              cpu: "200m"
             limits:
-              cpu: "750m" 
-              memory: "2Gi" 
+              memory: "512Mi"
+              cpu: "500m"
           volumeMounts:
             - name: postgres-data
-              mountPath: /var/lib/postgresql/data # Lokasi data PostgreSQL di dalam container
-            - name: postgres-config # Untuk mount custom postgresql.conf jika ada
+              mountPath: /var/lib/postgresql/data
+            - name: postgres-config
               mountPath: /etc/postgresql/postgresql.conf
-              subPath: postgresql.conf # Mount file spesifik dari ConfigMap
-          # --- START: SECURITY CONTEXT DI LEVEL CONTAINER ---
-          securityContext:
-            runAsUser: 999 # UID dari user 'postgres' di image PostgreSQL
-            runAsGroup: 999 # GID dari group 'postgres'
-            allowPrivilegeEscalation: false # Rekomendasi keamanan GKE
-            readOnlyRootFilesystem: false # PostgreSQL perlu menulis di data directory
-          # --- END: SECURITY CONTEXT DI LEVEL CONTAINER ---
+              subPath: postgresql.conf
           livenessProbe:
             exec:
-              command: ["/bin/sh", "-c", "exec pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1 -p 5432"]
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1 -p 5432
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
             exec:
-              command: ["/bin/sh", "-c", "exec pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1 -p 5432"]
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1 -p 5432
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
       volumes:
-        - name: postgres-config # Volume untuk ConfigMap postgresql.conf
+        - name: postgres-config
           configMap:
-            name: postgres-config # Pastikan ConfigMap ini Anda buat
-            optional: false
-  volumeClaimTemplates: # Definisi PVC yang akan dibuat secara otomatis
+            name: postgres-config
+  volumeClaimTemplates:
     - metadata:
-        name: postgres-data # Nama ini harus sesuai dengan volumeMounts
+        name: postgres-data
       spec:
-        accessModes:
-          - ReadWriteOnce
+        accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 5Gi # Sesuaikan ukuran penyimpanan yang Anda butuhkan
+            storage: 2Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgresql # Nama Service PostgreSQL
+  name: postgresql
   namespace: sonarqube
   labels:
     app: postgresql
 spec:
-  selector:
-    app: postgresql # Selector harus cocok dengan label pod StatefulSet
+  type: ClusterIP
   ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: pg-port # Mengacu pada nama port di container StatefulSet
-  clusterIP: None # Ini membuat service headless, penting untuk StatefulSet
+    - port: 5432
+      targetPort: 5432
+      name: postgresql
+  selector:
+    app: postgresql
