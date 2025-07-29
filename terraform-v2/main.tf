@@ -1,10 +1,10 @@
-resource "google_compute_network" "xmen_network" {
+resource "google_compute_network" "custom_network" {
     name = "custom-vpc"
     auto_create_subnetworks = false
 }
 
-resource "google_compute_subnetwork" "xmen_subnet" {
-    name          = "xmen-subnetwork"
+resource "google_compute_subnetwork" "custom_subnet" {
+    name          = "custom-subnetwork"
     ip_cidr_range = var.subnet_cidr
     region        = var.region
     network       = google_compute_network.custom_network.id
