@@ -1,6 +1,0 @@
-apiVersion: v2
-name: sonarqube
-description: SonarQube Helm Chart
-type: application
-version: 0.1.0
-appVersion: "10.5"

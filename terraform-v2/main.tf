@@ -67,3 +67,4 @@ resource "google_container_node_pool" "primary_nodes" {
         image_type = "COS_CONTAINERD"
     }
 }
+

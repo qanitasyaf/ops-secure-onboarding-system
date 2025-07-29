@@ -1,6 +1,0 @@
-resources:
-  - backend-deployment.yaml
-  - postgresql-deployment.yaml
-  - postgresql-service.yaml
-  - postgresql-secret.yaml
-  - networkpolicy.yaml

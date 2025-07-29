@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - jenkins-master-deployment.yaml
+  - jenkins-master-service.yaml
+  - jenkins-pvc.yaml
+  - jenkins-rbac.yaml

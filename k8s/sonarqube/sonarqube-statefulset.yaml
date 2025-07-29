@@ -16,8 +16,6 @@ spec:
       labels:
         app: sonarqube
     spec:
-      securityContext:
-        fsGroup: 1000 
       containers:
         - name: sonarqube
           image: sonarqube:community
@@ -35,7 +33,7 @@ spec:
             - name: SONARQUBE_WEB_JAVAOPTS
               value: "-Xmx2g -Xms2g" 
             - name: SONAR_JDBC_URL
-              value: "jdbc:postgresql://postgresql:5432/sonarqube"
+              value: "jdbc:postgresql://postgresql.sonarqube.svc.cluster.local:5432/sonarqube"
             - name: SONAR_JDBC_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -58,12 +56,6 @@ spec:
             - name: sonarqube-config
               mountPath: /opt/sonarqube/conf/sonar.properties
               subPath: sonar.properties
-              readOnly: true
-          securityContext:
-            runAsUser: 1000 
-            runAsGroup: 1000 
-            allowPrivilegeEscalation: false 
-            readOnlyRootFilesystem: false 
           livenessProbe:
             httpGet:
               path: /
@@ -92,6 +84,8 @@ spec:
         - name: sonarqube-config
           configMap:
             name: sonarqube-config
+        - name: sonarqube-temp
+          emptyDir: {} 
   volumeClaimTemplates:
     - metadata:
         name: sonarqube-data

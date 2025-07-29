@@ -1,7 +1,12 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: frontend
+  name: jenkins
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sonarqube
 ---
 apiVersion: v1
 kind: Namespace
@@ -11,9 +16,4 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: verificator
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: sonarqube
+  name: frontend  
