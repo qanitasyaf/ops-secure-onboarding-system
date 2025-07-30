@@ -17,7 +17,7 @@ spec:
       - name: backend-container
         image: gcr.io/model-parsec-465503-p3/backend-secure-onboarding-system:latest
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         resources:
           requests:
             memory: "512Mi"
@@ -25,19 +25,24 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "1"
+        envFrom:
+        - configMapRef:
+            name: backend-config
+        - secretRef:
+            name: postgres-credentials
+        - secretRef:
+            name: app-secrets
         env: 
-        - name: DB_HOST
-          value: postgresql-service.backend
-        - name: DB_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials
-              key: username
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials
-              key: password
+        - name: FIREBASE_CONFIG_PATH
+          value: /etc/firebase/serviceAccountKey.json 
+        volumeMounts:
+        - name: firebase-secret-volume
+          mountPath: /etc/firebase 
+          readOnly: true
+      volumes:
+      - name: firebase-secret-volume
+        secret:
+          secretName: firebase-secret
 ---
 apiVersion: v1
 kind: Service
@@ -51,4 +56,4 @@ spec:
   ports:
     - protocol: TCP
       port: 8080
-      targetPort: 8080
+      targetPort: 8081

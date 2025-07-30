@@ -1,0 +1,58 @@
+# --- Grafana Configuration ---
+grafana:
+  # -- Grafana Admin Password --
+  # Set to match the GF_SECURITY_ADMIN_PASSWORD from your docker-compose.yml
+  adminPassword: "admin"
+
+  # -- Grafana Persistence --
+  # Enabled to store Grafana data (dashboards, etc.)
+  persistence:
+    enabled: true
+    storageClassName: "standard-rwo"
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+
+  # -- Grafana Service --
+  # Expose Grafana via a GKE external Load Balancer.
+  service:
+    type: LoadBalancer
+
+# --- Prometheus Configuration ---
+prometheus:
+  prometheusSpec:
+    # -- Prometheus Storage --
+    # Configure a PersistentVolumeClaim to store Prometheus metrics data.
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "standard-rwo"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+    # -- Prometheus Retention --
+    retention: "10d"
+
+    # -- Additional Scrape Configuration --
+    # This section injects your custom scrape job into the main Prometheus config.
+    # It's the Helm equivalent of mounting your prometheus.yml file.
+    additionalScrapeConfigs:
+      - job_name: 'registration-customer-spring-boot-app'
+        metrics_path: '/api/actuator/prometheus'
+        # The scheme (http/https) must be configured separately.
+        scheme: https
+        static_configs:
+          - targets: ['vacuum-judge-naval-mae.trycloudflare.com']
+
+# --- Alertmanager Configuration ---
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "standard-rwo"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi

@@ -2,12 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - backend-deployment.yaml
+  - backend-configmap.yaml
+  - backend-deployment.yaml 
   - frontend-deployment.yaml
   - frontend-service.yaml
+  - postgresql-deployment.yaml
+  - postgresql-service.yaml
+  - postgresql-secret.yaml
   - ingress.yaml
   - networkpolicy.yaml
-  - postgresql-deployment.yaml
-  - postgresql-secret.yaml
-  - postgresql-service.yaml
-
+  - app-secrets.yaml 

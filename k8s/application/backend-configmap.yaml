@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: backend
+data:
+  SERVER_PORT: "8081"
+
+  JWT_EXPIRATION: "86400000"
+
+  DUKCAPIL_SERVICE_URL: "http://dukcapil-service.namespace-lain:8081"
+
+  BACKEND_BASE_URL: "http://backend-service.backend:8080"
