@@ -28,21 +28,30 @@ spec:
         envFrom:
         - configMapRef:
             name: backend-config
-        - secretRef:
-            name: postgres-credentials
+        # - secretRef:
+        #     name: postgres-credentials
         - secretRef:
             name: app-secrets
         env: 
         - name: FIREBASE_CONFIG_PATH
-          value: /etc/firebase/serviceAccountKey.json 
-        volumeMounts:
-        - name: firebase-secret-volume
-          mountPath: /etc/firebase 
-          readOnly: true
-      volumes:
-      - name: firebase-secret-volume
-        secret:
-          secretName: firebase-secret
+          value: model-parsec-465503-p3-firebase-adminsdk-fbsvc-1e9901efad.json
+        - name: DB_HOST
+          value: postgresql-service.backend
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: url
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-credentials
+              key: password
 ---
 apiVersion: v1
 kind: Service
