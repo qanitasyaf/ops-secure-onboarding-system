@@ -3,13 +3,24 @@ kind: Ingress
 metadata:
   name: secure-onboarding-ingress
   namespace: frontend
-  # annotations:
-  #   nginx.ingress.kubernetes.io/rewrite-target: /
+  annotations:
+    # add enable course
+    kubernetes.io/ingress-class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "secure-onboarding-ip"
 spec:
-  # ingressClassName: nginx
   rules:
-  - http:
+  - host: wondrdesktop.andrc1613.my.id 
+    http:
       paths:
+      - path: /api/auth
+        pathType: Prefix
+        backend:
+          service:
+            # Menggunakan nama service saja.
+            # Ingress controller akan mencari service ini di namespace 'default' atau namespace di mana Ingress dideploy.
+            name: backend-service
+            port:
+              number: 8080 # Port service backend Anda
       - path: /
         pathType: Prefix
         backend:

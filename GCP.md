@@ -5,6 +5,11 @@
 ## Commands
 
 ```bash
+### LOGIN ###
+gcloud auth login
+gcloud container clusters get-credentials gke-secure-onboarding-system --zone asia-southeast1-a --project model-parsec-465503-p3
+
+
 ##### BACKEND & Database #####
 kubectl apply -f backend-configmap.yaml -n backend
 kubectl apply -f backend-deployment.yaml -n backend
@@ -38,4 +43,10 @@ kubectl get ingress -n frontend
 
 # melihat detail dari ingress
 kubectl describe ingress secure-onboarding-ingress -n frontend
+```
+```bash
+### Jenkins Password ###
+kubectl exec -it -n jenkins jenkins-master-0 -- cat /var/jenkins_home/secrets/initialAdminPassw
+ord
+b40ab7d471da474db4e1892845bbcde0
 ```
