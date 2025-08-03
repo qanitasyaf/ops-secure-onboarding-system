@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend-service  # Nama ini harus sama dengan yang Anda panggil di Ingress
-  namespace: frontend   # Dibuat di namespace yang sama dengan Ingress
-spec:
-  type: ExternalName
-  # Arahkan ke nama service asli di namespace backend
-  externalName: backend-service.backend.svc.cluster.local

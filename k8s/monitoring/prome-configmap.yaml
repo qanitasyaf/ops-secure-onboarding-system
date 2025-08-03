@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    rule_files:
+      - "/etc/prometheus-rules/alert-rules.yml"
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+                - alertmanager:9093 
+    scrape_configs:
+      - job_name: 'secure-onboarding-spring-boot-app'
+        metrics_path: '/api/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['wondrdesktop.my.id']

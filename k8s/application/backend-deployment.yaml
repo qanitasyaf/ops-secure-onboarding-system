@@ -28,15 +28,13 @@ spec:
         envFrom:
         - configMapRef:
             name: backend-config
-        # - secretRef:
-        #     name: postgres-credentials
         - secretRef:
             name: app-secrets
         env: 
         - name: FIREBASE_CONFIG_PATH
           value: model-parsec-465503-p3-firebase-adminsdk-fbsvc-1e9901efad.json
-        - name: APP_CORS_ALLOWED_ORIGINS
-          value: "http://localhost:3000, http://localhost:5173, http://wondrdesktop.andrc1613.my.id"
+        - name: CORS_ALLOWED_ORIGINS
+          value: "http://localhost:3000, http://localhost:5173, http://wondrdesktop.my.id, https://verificator-secure-onboarding-system-441501015598.asia-southeast1.run.app"
         - name: DB_HOST
           value: postgresql-service.backend
         - name: DB_URL

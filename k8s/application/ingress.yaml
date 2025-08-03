@@ -2,27 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: secure-onboarding-ingress
-  namespace: frontend
+  namespace: frontend 
   annotations:
-    # add enable course
-    kubernetes.io/ingress-class: "gce"
+    kubernetes.io/ingress.class: "gce"
+    # networking.gke.io/managed-certificates: frontend-cert
     kubernetes.io/ingress.global-static-ip-name: "secure-onboarding-ip"
 spec:
   rules:
-  - host: wondrdesktop.andrc1613.my.id 
+  - host: wondrdesktop.my.id
     http:
       paths:
-      - path: /api/auth
-        pathType: Prefix
-        backend:
-          service:
-            # Menggunakan nama service saja.
-            # Ingress controller akan mencari service ini di namespace 'default' atau namespace di mana Ingress dideploy.
-            name: backend-service
-            port:
-              number: 8080 # Port service backend Anda
-      - path: /
-        pathType: Prefix
+      - path: /*
+        pathType: ImplementationSpecific
         backend:
           service:
             name: frontend-service

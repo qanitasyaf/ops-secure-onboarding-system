@@ -14,7 +14,12 @@ gcloud container clusters get-credentials gke-secure-onboarding-system --zone as
 kubectl apply -f backend-configmap.yaml -n backend
 kubectl apply -f backend-deployment.yaml -n backend
 
+kubectl delete -f backend-deployment.yaml -n backend
+
+kubectl rollout restart deployment/backend-deployment -n backend       
 kubectl delete replicaset.apps/backend-deployment-76489489b6 -n backend  
+kubectl rollout restart deployment/frontend-deployment -n frontend
+
 
 # eksekusi ke dalam pods postgresql utk verifikasi sudah ada
 kubectl exec -it -n backend postgresql-0 -- psql -U database -d customer-registration
@@ -46,7 +51,6 @@ kubectl describe ingress secure-onboarding-ingress -n frontend
 ```
 ```bash
 ### Jenkins Password ###
-kubectl exec -it -n jenkins jenkins-master-0 -- cat /var/jenkins_home/secrets/initialAdminPassw
-ord
+kubectl exec -it -n jenkins jenkins-master-0 -- cat /var/jenkins_home/secrets/initialAdminPassword
 b40ab7d471da474db4e1892845bbcde0
 ```
