@@ -5,17 +5,51 @@ metadata:
   namespace: monitoring
 data:
   alertmanager.yaml: |-
-    global: {}
+    global:
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: 'andrcyes@gmail.com'
+      smtp_auth_username: 'andrcyes@gmail.com'
+      smtp_auth_password: 'ohueqemybmsliuge'  # Generate baru!
+      smtp_require_tls: true
 
     route:
       group_by: ['alertname']
-      group_wait: 10s
-      group_interval: 10s
-      repeat_interval: 1h
-      receiver: 'discord'
+      group_wait: 30s           # Tunggu lebih lama sebelum send
+      group_interval: 10m       # Interval antar group alerts
+      repeat_interval: 4h       # Repeat tiap 4 jam (bukan 1 jam)
+      receiver: 'dual-notification'
 
     receivers:
-    - name: 'discord'
+    - name: 'dual-notification'
+      discord_configs:
+      - webhook_url: 'https://discord.com/api/webhooks/1399972172872552598/Hk0mR6_8QAg1EeWOknTyi8VHYvNehLYCpuGX3SCAfLdds4x5kcJtjjHq35zsj5Dt1l_s'
+        send_resolved: true
+        title: 'Wondr Desktop Alert'
+        message: |
+          {{ range .Alerts }}
+          **{{ .Annotations.summary }}**
+          {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Status: {{ .Status }}
+          {{ end }}
+      
+      email_configs:
+      - to: 'andrcyes@gmail.com'
+        from: 'andrcyes@gmail.com'
+        headers:
+          Subject: '[ALERT] {{ .GroupLabels.alertname }}'
+        html: |
+          <h2>Alert Notification</h2>
+          {{ range .Alerts }}
+          <div style="border: 1px solid #ccc; padding: 10px; margin: 5px;">
+            <h3>{{ .Annotations.summary }}</h3>
+            <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+            <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+            <p><strong>Status:</strong> {{ .Status }}</p>
+          </div>
+          {{ end }}
+
+    - name: 'discord-only'
       discord_configs:
       - webhook_url: 'https://discord.com/api/webhooks/1399972172872552598/Hk0mR6_8QAg1EeWOknTyi8VHYvNehLYCpuGX3SCAfLdds4x5kcJtjjHq35zsj5Dt1l_s'
         send_resolved: true
