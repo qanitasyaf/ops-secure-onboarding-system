@@ -4,12 +4,12 @@ metadata:
   name: grafana-datasources
   namespace: monitoring 
 data:
-  datasources.yml: |-
+  datasources.yaml: |-
     apiVersion: 1
     datasources:
       - name: Prometheus
         type: prometheus
         access: proxy
         # URL ini menunjuk ke Service Prometheus yang sudah ada
-        url: http://35.240.161.40:9090 
+        url: http://prometheus.monitoring.svc.cluster.local:9090 
         isDefault: true

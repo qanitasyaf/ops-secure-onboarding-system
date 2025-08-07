@@ -16,7 +16,7 @@ spec:
         - name: prometheus
           image: prom/prometheus:latest
           args:
-            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--config.file=/etc/prometheus/prome-configmap.yaml'
             - '--storage.tsdb.path=/prometheus'
             - '--log.format=json'
             - '--enable-feature=exemplar-storage'
@@ -24,19 +24,25 @@ spec:
           ports:
             - containerPort: 9090
               name: web
+          readinessProbe:
+            httpGet:
+              path: /-/healthy
+              port: web
+            initialDelaySeconds: 30
+            periodSeconds: 10
           volumeMounts:
             - name: config-volume
               mountPath: /etc/prometheus/
             - name: data-volume
               mountPath: /prometheus
             - name: rules-volume
-              mountPath: /etc/prometheus/rules
+              mountPath: /etc/prometheus-rules/
       volumes:
         - name: config-volume
           configMap:
             name: prometheus-config
         - name: data-volume
-          emptyDir: {}
+          emptyDir: {}  
         - name: rules-volume
           configMap:
             name: prometheus-alert-rules

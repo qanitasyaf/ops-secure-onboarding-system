@@ -4,12 +4,12 @@ metadata:
   name: prometheus-config
   namespace: monitoring
 data:
-  prometheus.yml: |
+  prome-configmap.yaml: |
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
     rule_files:
-      - "/etc/prometheus-rules/alert-rules.yml"
+      - "/etc/prometheus-rules/alert-rules.yaml"
     alerting:
       alertmanagers:
         - static_configs:

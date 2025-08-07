@@ -1,0 +1,190 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alert-rules
+  namespace: monitoring
+data:
+  alert-rules.yaml: |-
+    groups:
+    - name: wondr-desktop-alerts
+      rules:
+      # Application Down (Critical)
+      - alert: WondrDesktopDown
+        expr: up{job="spring-boot-app"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: wondr-desktop
+        annotations:
+          summary: "🔥 Wondr Desktop application is DOWN"
+          description: "Wondr Desktop application has been down for more than 30 seconds"
+
+      # High Memory Usage (Warning -> Critical)
+      - alert: WondrDesktopHighMemoryUsage
+        expr: (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) * 100 > 70
+        for: 1m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High JVM memory usage"
+          description: "Wondr Desktop JVM heap memory usage is above 70% ({{ $value }}%)"
+
+      - alert: WondrDesktopCriticalMemoryUsage
+        expr: (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) * 100 > 85
+        for: 30s
+        labels:
+          severity: critical
+          service: wondr-desktop
+        annotations:
+          summary: "🔥 Wondr Desktop - CRITICAL JVM memory usage"
+          description: "Wondr Desktop JVM heap memory usage is above 85% ({{ $value }}%)"
+
+      # High CPU Usage
+      - alert: WondrDesktopHighCPUUsage
+        expr: system_cpu_usage > 0.7
+        for: 2m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High CPU usage"
+          description: "Wondr Desktop system CPU usage is above 70% ({{ $value }}%)"
+
+      # High HTTP Error Rate (4xx)
+      - alert: WondrDesktopHigh4xxRate
+        expr: rate(http_server_requests_seconds_count{status=~"4.."}[2m]) > 0.1
+        for: 1m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High HTTP 4xx error rate"
+          description: "Wondr Desktop HTTP 4xx error rate is above 10% ({{ $value }} req/sec)"
+
+      # High HTTP Error Rate (5xx)
+      - alert: WondrDesktopHigh5xxRate
+        expr: rate(http_server_requests_seconds_count{status=~"5.."}[2m]) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+          service: wondr-desktop
+        annotations:
+          summary: "🔥 Wondr Desktop - High HTTP 5xx error rate"
+          description: "Wondr Desktop HTTP 5xx error rate is above 5% ({{ $value }} req/sec)"
+
+      # Database Connection Issues
+      - alert: WondrDesktopDatabaseConnectionHigh
+        expr: hikaricp_connections_active / hikaricp_connections_max > 0.8
+        for: 1m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High database connection usage"
+          description: "Wondr Desktop database connection pool usage is above 80% ({{ $value }}%)"
+
+      # Response Time Alert
+      - alert: WondrDesktopHighResponseTime
+        expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[2m])) > 1
+        for: 2m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High response time"
+          description: "Wondr Desktop 95th percentile response time is above 1 second ({{ $value }}s)"
+
+      # Disk Space (if available)
+      - alert: WondrDesktopHighDiskUsage
+        expr: (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High disk usage"
+          description: "Wondr Desktop disk usage is above 80% ({{ $value }}%)"
+
+      # JVM Thread Count
+      - alert: WondrDesktopHighThreadCount
+        expr: jvm_threads_live_threads > 200
+        for: 2m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High JVM thread count"
+          description: "Wondr Desktop JVM thread count is above 200 ({{ $value }} threads)"
+
+      # HTTP Request Rate Drop (Application might be hanging)
+      - alert: WondrDesktopLowRequestRate
+        expr: rate(http_server_requests_seconds_count[5m]) < 0.01
+        for: 3m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - Low HTTP request rate"
+          description: "Wondr Desktop HTTP request rate is very low ({{ $value }} req/sec) - application might be hanging"
+
+      # JVM GC Time High
+      - alert: WondrDesktopHighGCTime
+        expr: rate(jvm_gc_pause_seconds_sum[2m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: wondr-desktop
+        annotations:
+          summary: "⚠️ Wondr Desktop - High JVM Garbage Collection time"
+          description: "Wondr Desktop JVM GC time is above 10% ({{ $value }}%)"
+
+    # Testing group - Easy to trigger
+    - name: wondr-desktop-testing
+      rules:
+      # Trigger by hitting actuator multiple times
+      - alert: WondrDesktopHighActuatorRequests
+        expr: rate(http_server_requests_seconds_count{uri="/api/actuator/health"}[1m]) > 0.5
+        for: 10s
+        labels:
+          severity: info
+          service: wondr-desktop
+        annotations:
+          summary: "📊 Wondr Desktop - High actuator requests (TESTING)"
+          description: "Wondr Desktop actuator health endpoint getting {{ $value }} requests/sec"
+
+      # Always firing (for testing)
+      - alert: WondrDesktopAlwaysFiring
+        expr: vector(1)
+        for: 5s
+        labels:
+          severity: info
+          service: wondr-desktop
+        annotations:
+          summary: "🔧 Wondr Desktop - Always firing alert (TESTING)"
+          description: "Wondr Desktop monitoring system is active - this alert always fires for testing purposes"
+
+    # Recovery/Health group
+    - name: wondr-desktop-health
+      rules:
+      # Application Recovered
+      - alert: WondrDesktopRecovered
+        expr: up{job="spring-boot-app"} == 1 and up{job="spring-boot-app"} offset 1m == 0
+        for: 10s
+        labels:
+          severity: info
+          service: wondr-desktop
+        annotations:
+          summary: "✅ Wondr Desktop application is BACK UP"
+          description: "Wondr Desktop application has recovered and is now healthy"
+
+      # Overall System Health
+      - alert: WondrDesktopSystemHealthy
+        expr: up{job="spring-boot-app"} == 1 and (jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}) * 100 < 60 and system_cpu_usage < 0.5
+        for: 5m
+        labels:
+          severity: info
+          service: wondr-desktop
+        annotations:
+          summary: "💚 Wondr Desktop system is healthy"
+          description: "Wondr Desktop - All metrics are within normal ranges. System running optimally."

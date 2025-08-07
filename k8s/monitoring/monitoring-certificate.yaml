@@ -1,0 +1,10 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: monitoring-cert
+  namespace: monitoring
+spec:
+  domains:
+    - grafana.wondrdesktop.my.id
+    - prometheus.wondrdesktop.my.id
+

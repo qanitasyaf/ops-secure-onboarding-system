@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: frontend-container
-        image: gcr.io/model-parsec-465503-p3/frontend-secure-onboarding-system:latest
+        image: gcr.io/model-parsec-465503-p3/frontend-secure-onboarding-system:15
         ports:
           - containerPort: 80
         volumeMounts:
