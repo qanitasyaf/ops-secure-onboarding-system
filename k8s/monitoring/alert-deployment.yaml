@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: alertmanager
-          image: prom/alertmanager:v0.27.0 # Menggunakan versi spesifik
+          image: prom/alertmanager:v0.27.0 
           args:
             - '--config.file=/etc/alertmanager/alertmanager.yaml'
             - '--storage.path=/alertmanager'
@@ -31,7 +31,7 @@ spec:
           configMap:
             name: alertmanager-config
         - name: data-volume
-          emptyDir: {} # Data silences akan hilang saat restart, gunakan PVC untuk produksi
+          emptyDir: {} 
 ---
 apiVersion: v1
 kind: Service
