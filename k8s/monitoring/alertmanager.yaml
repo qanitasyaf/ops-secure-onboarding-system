@@ -7,9 +7,9 @@ data:
   alertmanager.yaml: |-
     global:
       smtp_smarthost: 'smtp.gmail.com:587'
-      smtp_from: 'andrcyes@gmail.com'
-      smtp_auth_username: 'andrcyes@gmail.com'
-      smtp_auth_password: 'ohueqemybmsliuge'  # Generate baru!
+      smtp_from: 'alertxmen@gmail.com'
+      smtp_auth_username: 'alertxmen@gmail.com'
+      smtp_auth_password: 'petbxaydmtffuqid'  # Generate baru!
       smtp_require_tls: true
 
     route:
@@ -34,8 +34,8 @@ data:
           {{ end }}
       
       email_configs:
-      - to: 'andrcyes@gmail.com'
-        from: 'andrcyes@gmail.com'
+      - to: 'alertxmen@gmail.com'
+        from: 'alertxmen@gmail.com'
         headers:
           Subject: '[ALERT] {{ .GroupLabels.alertname }}'
         html: |

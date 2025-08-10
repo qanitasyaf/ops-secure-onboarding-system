@@ -83,3 +83,5 @@ kubectl delete -f prome-daemonset.yaml -n monitoring
 kubectl delete -f prome-service.yaml -n monitoring
 
 kubectl edit servicenetworkendpointgroup k8s1-3963eb42-monitoring-prometheus-9090-03626dab -n monitoring
+
+kubectl 
