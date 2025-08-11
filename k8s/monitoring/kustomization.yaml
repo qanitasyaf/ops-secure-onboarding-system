@@ -1,0 +1,17 @@
+# k8s/monitoring/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - alert-deployment.yaml
+  - alert-rules.yaml
+  - alertmanager.yaml
+  - grafana-configmap.yaml
+  - grafana-service.yaml
+  - grafana-statefulset.yaml
+  - ingress.yaml
+  - monitoring-certificate.yaml 
+  - prome-configmap.yaml       
+  - prome-daemonset.yaml        
+  - prome-service.yaml
+  
